@@ -1,16 +1,5 @@
-﻿using Dotmim.Sync.Batch;
-using Dotmim.Sync.Builders;
-using Dotmim.Sync.Enumerations;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+﻿using Dotmim.Sync.Enumerations;
 using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Common;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,7 +12,7 @@ namespace Dotmim.Sync
         /// <summary>
         /// Create a remote orchestrator, used to orchestrates the whole sync on the server side
         /// </summary>
-        public RemoteOrchestrator(CoreProvider provider, SyncOptions options) : base(provider, options)
+        public RemoteOrchestrator(CoreProvider provider, SyncOptions options, bool isInterceptorSupported = true) : base(provider, options, isInterceptorSupported)
         {
             if (this.Provider != null && !this.Provider.CanBeServerProvider)
                 throw GetSyncError(null, new UnsupportedServerProviderException(this.Provider.GetProviderTypeName()));
@@ -32,7 +21,7 @@ namespace Dotmim.Sync
         /// <summary>
         /// Create a remote orchestrator, used to orchestrates the whole sync on the server side
         /// </summary>
-        public RemoteOrchestrator(CoreProvider provider) : base(provider, new SyncOptions())
+        public RemoteOrchestrator(CoreProvider provider, bool isInterceptorSupported = true) : base(provider, new SyncOptions(), isInterceptorSupported)
         {
             if (this.Provider != null && !this.Provider.CanBeServerProvider)
                 throw GetSyncError(null, new UnsupportedServerProviderException(this.Provider.GetProviderTypeName()));

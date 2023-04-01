@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Common;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -10,8 +8,6 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Dotmim.Sync.Batch;
-using Dotmim.Sync.Enumerations;
 using Dotmim.Sync.Serialization;
 using Newtonsoft.Json;
 
@@ -71,7 +67,7 @@ namespace Dotmim.Sync.Web.Client
             HttpClient client = null,
             SyncPolicy syncPolicy = null,
             int maxDownladingDegreeOfParallelism = 4)
-            : base(null, new SyncOptions())
+            : base(null, new SyncOptions(), false)
         {
 
             // if no HttpClient provisionned, create a new one

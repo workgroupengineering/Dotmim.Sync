@@ -2,16 +2,12 @@
 using Dotmim.Sync.Builders;
 using Dotmim.Sync.Enumerations;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
@@ -23,6 +19,7 @@ namespace Dotmim.Sync
     {
         // Collection of Interceptors
         internal Interceptors interceptors = new();
+        private readonly bool _isInterceptorSupported;
 
         /// <summary>
         /// Gets or Sets the provider used by this local orchestrator
@@ -48,7 +45,7 @@ namespace Dotmim.Sync
         /// <summary>
         /// Create a local orchestrator, used to orchestrates the whole sync on the client side
         /// </summary>
-        public BaseOrchestrator(CoreProvider provider, SyncOptions options)
+        public BaseOrchestrator(CoreProvider provider, SyncOptions options, bool isInterceptorSupported = true)
         {
             this.Options = options ?? throw GetSyncError(null, new ArgumentNullException(nameof(options)));
 
@@ -59,17 +56,26 @@ namespace Dotmim.Sync
             }
 
             this.Logger = options.Logger;
+            _isInterceptorSupported = isInterceptorSupported;
         }
 
         /// <summary>
         /// Add an interceptor of T
         /// </summary>
-        internal virtual Guid AddInterceptor<T>(Action<T> action) where T : ProgressArgs => this.interceptors.Add(action);
+        internal virtual Guid AddInterceptor<T>(Action<T> action) where T : ProgressArgs
+        {
+            if (!_isInterceptorSupported) throw new NotSupportedException($"{GetType()} don't supported Interceptor");
+            return this.interceptors.Add(action);
+        }
 
         /// <summary>
         /// Add an async interceptor of T
         /// </summary>
-        internal virtual Guid AddInterceptor<T>(Func<T, Task> action) where T : ProgressArgs => this.interceptors.Add(action);
+        internal virtual Guid AddInterceptor<T>(Func<T, Task> action) where T : ProgressArgs
+        {
+            if (!_isInterceptorSupported) throw new NotSupportedException($"{GetType()} don't supported Interceptor");
+            return this.interceptors.Add(action);
+        }
 
         /// <summary>
         /// Remove all interceptors based on type of ProgressArgs
